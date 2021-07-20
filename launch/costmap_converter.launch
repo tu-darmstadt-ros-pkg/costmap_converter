@@ -1,0 +1,3 @@
+<launch>
+<node pkg="costmap_converter" type="standalone_converter" name="costmap_converter"/>
+</launch>
