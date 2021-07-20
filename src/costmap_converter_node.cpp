@@ -69,7 +69,7 @@ public:
 
       ROS_INFO_STREAM("Standalone costmap converter:" << converter_plugin << " loaded.");
 
-      std::string costmap_topic = "/move_base/local_costmap/costmap";
+      std::string costmap_topic = "/traversability_occ_map";
       n_.param("costmap_topic", costmap_topic, costmap_topic);
 
       std::string costmap_update_topic = "/move_base/local_costmap/costmap_updates";
