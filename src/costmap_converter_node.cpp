@@ -45,6 +45,7 @@
 
 #include <costmap_converter/costmap_converter_interface.h>
 #include <pluginlib/class_loader.h>
+#include <chrono>
 
 
 
@@ -104,6 +105,7 @@ public:
 
   void costmapCallback(const nav_msgs::OccupancyGridConstPtr& msg)
   {
+  
       ROS_INFO_ONCE("Got first costmap callback. This message will be printed once");
 
       if (msg->info.width != map_.getSizeInCellsX() || msg->info.height != map_.getSizeInCellsY() || msg->info.resolution != map_.getResolution())
@@ -133,14 +135,16 @@ public:
         return;
 
       obstacle_pub_.publish(obstacles);
-
+      
       frame_id_ = msg->header.frame_id;
 
       publishAsMarker(frame_id_, *obstacles, marker_pub_);
+      
   }
 
   void costmapUpdateCallback(const map_msgs::OccupancyGridUpdateConstPtr& update)
   {
+  auto begin = std::chrono::high_resolution_clock::now();
     unsigned int di = 0;
     for (unsigned int y = 0; y < update->height ; ++y)
     {
@@ -160,8 +164,12 @@ public:
       return;
 
     obstacle_pub_.publish(obstacles);
+     auto end_time = std::chrono::high_resolution_clock::now();
+    auto elapsed_time = std::chrono::duration_cast<std::chrono::nanoseconds>(end_time - begin);
+    printf("Time measured costmapupdate: %.3f seconds.\n", elapsed_time.count() * 1e-9);
 
     publishAsMarker(frame_id_, *obstacles, marker_pub_);
+    
   }
 
   void publishAsMarker(const std::string& frame_id, const std::vector<geometry_msgs::PolygonStamped>& polygonStamped, ros::Publisher& marker_pub)
